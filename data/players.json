@@ -1,0 +1,13 @@
+{
+  "players": {
+    "testuser": {
+      "userId": "testuser",
+      "mode": "guest",
+      "accountCreated": false,
+      "displayName": "Visitante",
+      "payout": null,
+      "createdAt": "2026-06-12T04:12:52.287Z",
+      "updatedAt": "2026-06-12T04:12:52.287Z"
+    }
+  }
+}

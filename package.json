@@ -1,0 +1,24 @@
+{
+  "name": "telegram-crash-miniapp-mvp",
+  "version": "0.7.0",
+  "description": "Telegram Mini App MVP de crash game com saldo fake, arquitetura modular e sem dinheiro real.",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "health": "node scripts/healthcheck.js"
+  },
+  "keywords": [
+    "telegram",
+    "miniapp",
+    "webapp",
+    "crash-game",
+    "mvp"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}

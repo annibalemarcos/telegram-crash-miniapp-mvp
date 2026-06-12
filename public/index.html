@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Sky Pilot MVP</title>
+  <script src="https://telegram.org/js/telegram-web-app.js?62"></script>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <section class="onboarding" id="onboarding">
+    <div class="onboarding-card card">
+      <p class="eyebrow">Entrada rápida</p>
+      <h1>Jogue como visitante ou crie uma conta</h1>
+      <p class="muted">Você pode entrar direto sem cadastro. Antes de depositar ou apostar, escolha como quer pagar/receber em caso de ganho: Pix ou cripto. Tudo aqui segue em modo fake/demo.</p>
+
+      <div class="onboarding-step" id="stepChoice">
+        <div class="choice-grid">
+          <button class="choice-card" id="guestBtn" type="button">
+            <strong>Entrar sem conta</strong>
+            <span>Gera um visitante local e vai direto para configurar recebimento.</span>
+          </button>
+          <button class="choice-card" id="accountBtn" type="button">
+            <strong>Criar conta demo</strong>
+            <span>Salva um nome/apelido demo antes de jogar.</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="onboarding-step" id="stepAccount" hidden>
+        <label>
+          Apelido
+          <input id="accountName" type="text" maxlength="80" placeholder="Ex: Marcos" />
+        </label>
+        <label>
+          E-mail opcional
+          <input id="accountEmail" type="email" maxlength="120" placeholder="voce@email.com" />
+        </label>
+        <div class="button-row">
+          <button id="saveAccountBtn" class="primary" type="button">Criar conta demo</button>
+          <button id="skipAccountBtn" class="ghost" type="button">Continuar sem conta</button>
+        </div>
+      </div>
+
+      <div class="onboarding-step" id="stepPayout" hidden>
+        <h2>Como você quer pagar/receber?</h2>
+        <p class="muted">A confirmação dupla evita erro besta de chave Pix/carteira. Aqui não há pagamento real; é só preparação modular.</p>
+        <div class="method-toggle">
+          <button type="button" class="method-btn active" data-method="pix">Pix</button>
+          <button type="button" class="method-btn" data-method="crypto">Cripto</button>
+        </div>
+
+        <div id="pixFields" class="method-fields">
+          <label>
+            Tipo de chave Pix
+            <select id="pixKeyType">
+              <option value="cpf">CPF</option>
+              <option value="email">E-mail</option>
+              <option value="phone">Telefone</option>
+              <option value="random">Chave aleatória</option>
+            </select>
+          </label>
+          <label>
+            Chave Pix
+            <input id="pixKey" type="text" autocomplete="off" inputmode="text" placeholder="Digite a chave Pix" />
+            <small class="field-help" id="pixHelp">CPF: use 11 números. Ex: 123.456.789-09</small>
+          </label>
+          <label>
+            Confirme a chave Pix
+            <input id="pixKeyConfirm" type="text" autocomplete="off" inputmode="text" placeholder="Digite novamente" />
+          </label>
+        </div>
+
+        <div id="cryptoFields" class="method-fields" hidden>
+          <label>
+            Moeda
+            <select id="cryptoCoin">
+              <option value="BTC">BTC</option>
+              <option value="ETH">ETH</option>
+              <option value="USDT_TRC20">USDT TRC20</option>
+              <option value="USDT_ERC20">USDT ERC20</option>
+              <option value="SOL">SOL</option>
+            </select>
+          </label>
+          <label>
+            Carteira
+            <input id="walletAddress" type="text" autocomplete="off" placeholder="Endereço da carteira" />
+          </label>
+          <label>
+            Confirme a carteira
+            <input id="walletAddressConfirm" type="text" autocomplete="off" placeholder="Digite novamente" />
+          </label>
+        </div>
+
+        <p class="status" id="onboardingStatus">Configure seu método para liberar o jogo.</p>
+        <button id="savePayoutBtn" class="primary wide" type="button">Salvar e entrar no jogo</button>
+      </div>
+    </div>
+  </section>
+
+  <main class="app-shell" id="appShell" hidden>
+    <section class="hero card">
+      <div>
+        <p class="eyebrow">Telegram Mini App · MVP demonstrativo</p>
+        <h1 id="appName">Sky Pilot</h1>
+        <p class="muted">Sala global fake, créditos demonstrativos e rodada sincronizada. Sem Pix real, sem cripto real, sem cassino fantasiado de unicórnio.</p>
+        <p class="player-chip" id="playerChip">Visitante · recebimento não configurado</p>
+      </div>
+      <div class="balance-box">
+        <span>Saldo fake</span>
+        <strong id="balance">--</strong>
+      </div>
+    </section>
+
+    <section class="room-bar card">
+      <div>
+        <span class="mini-label">Rodada global</span>
+        <strong id="roundId">#--</strong>
+      </div>
+      <div>
+        <span class="mini-label">Online fake</span>
+        <strong id="onlinePlayers">--</strong>
+      </div>
+      <div>
+        <span class="mini-label">Apostas sala</span>
+        <strong id="roomBets">--</strong>
+      </div>
+      <div>
+        <span class="mini-label">Já sacaram</span>
+        <strong id="roomCashed">--</strong>
+      </div>
+    </section>
+
+    <section class="game-card card">
+      <div class="sky" id="sky">
+        <div class="plane" id="plane">✈️</div>
+        <div class="cloud cloud-a"></div>
+        <div class="cloud cloud-b"></div>
+        <div class="countdown" id="countdown">--</div>
+        <div class="multiplier" id="multiplier">1.00x</div>
+        <div class="phase" id="phase">Aguardando...</div>
+      </div>
+      <div class="history-wrap">
+        <span>Últimos crashes</span>
+        <div class="history" id="history"></div>
+      </div>
+    </section>
+
+
+    <section class="result-card card" id="resultCard" hidden>
+      <div>
+        <p class="eyebrow">Resultado da rodada</p>
+        <h2 id="resultTitle">Aguardando resultado</h2>
+        <p class="muted" id="resultSubtitle">Quando a rodada fechar, o resumo aparece aqui.</p>
+      </div>
+      <div class="result-grid" id="resultDetails"></div>
+    </section>
+
+    <section class="slots-grid">
+      <article class="slot-card card" data-slot-card="1">
+        <div class="slot-head">
+          <div>
+            <p class="eyebrow">Aposta 1</p>
+            <h2>Slot 1</h2>
+          </div>
+          <span class="slot-status" id="slotStatus1">Livre</span>
+        </div>
+        <label>
+          Valor fake
+          <input id="betAmount1" type="number" min="1" step="1" value="10" />
+        </label>
+        <div class="auto-cashout-panel">
+          <div class="auto-cashout-head">
+            <strong>Auto Cash Out</strong>
+            <span id="selectedAutoCashout1">Manual</span>
+          </div>
+          <div class="x-grid" data-slot="1" aria-label="Selecionar multiplicador de saída automática do slot 1">
+            <button type="button" class="x-btn active" data-x="manual">Manual</button>
+            <button type="button" class="x-btn" data-x="1.20">1.20x</button>
+            <button type="button" class="x-btn" data-x="1.50">1.50x</button>
+            <button type="button" class="x-btn" data-x="2.00">2.00x</button>
+            <button type="button" class="x-btn" data-x="3.00">3.00x</button>
+            <button type="button" class="x-btn" data-x="5.00">5.00x</button>
+          </div>
+          <label class="custom-x-label">
+            X personalizado
+            <input id="customAutoCashout1" type="number" min="1.01" step="0.01" placeholder="Ex: 2.75" inputmode="decimal" />
+          </label>
+        </div>
+        <div class="button-row">
+          <button id="betBtn1" class="primary" data-bet-slot="1">Apostar 1</button>
+          <button id="cashoutBtn1" class="success" data-cashout-slot="1" disabled>Cash Out 1</button>
+        </div>
+        <div class="my-bet" id="myBet1"></div>
+      </article>
+
+      <article class="slot-card card" data-slot-card="2">
+        <div class="slot-head">
+          <div>
+            <p class="eyebrow">Aposta 2</p>
+            <h2>Slot 2</h2>
+          </div>
+          <span class="slot-status" id="slotStatus2">Livre</span>
+        </div>
+        <label>
+          Valor fake
+          <input id="betAmount2" type="number" min="1" step="1" value="10" />
+        </label>
+        <div class="auto-cashout-panel">
+          <div class="auto-cashout-head">
+            <strong>Auto Cash Out</strong>
+            <span id="selectedAutoCashout2">Manual</span>
+          </div>
+          <div class="x-grid" data-slot="2" aria-label="Selecionar multiplicador de saída automática do slot 2">
+            <button type="button" class="x-btn active" data-x="manual">Manual</button>
+            <button type="button" class="x-btn" data-x="1.20">1.20x</button>
+            <button type="button" class="x-btn" data-x="1.50">1.50x</button>
+            <button type="button" class="x-btn" data-x="2.00">2.00x</button>
+            <button type="button" class="x-btn" data-x="3.00">3.00x</button>
+            <button type="button" class="x-btn" data-x="5.00">5.00x</button>
+          </div>
+          <label class="custom-x-label">
+            X personalizado
+            <input id="customAutoCashout2" type="number" min="1.01" step="0.01" placeholder="Ex: 4.20" inputmode="decimal" />
+          </label>
+        </div>
+        <div class="button-row">
+          <button id="betBtn2" class="primary" data-bet-slot="2">Apostar 2</button>
+          <button id="cashoutBtn2" class="success" data-cashout-slot="2" disabled>Cash Out 2</button>
+        </div>
+        <div class="my-bet" id="myBet2"></div>
+      </article>
+    </section>
+
+    <section class="card grid-two">
+      <div>
+        <h2>Sala ao vivo fake</h2>
+        <p class="muted">Feed gerado pelo servidor para simular uma sala em movimento. Todo mundo vê a mesma rodada global.</p>
+        <div class="live-feed" id="liveFeed"></div>
+      </div>
+      <div>
+        <h2>Depósito fake</h2>
+        <p class="muted">Antes do depósito, o método de pagamento/recebimento precisa estar configurado. Continua tudo demo.</p>
+        <div class="payout-summary" id="payoutSummary">Recebimento não configurado.</div>
+        <div class="deposit-row">
+          <input id="depositAmount" type="number" min="1" step="1" value="100" />
+          <select id="provider">
+            <option value="fake_pix">Pix Fake</option>
+            <option value="fake_crypto">Cripto Fake</option>
+          </select>
+          <button id="depositBtn">Gerar</button>
+        </div>
+        <pre id="depositBox" class="deposit-box">Nenhum depósito gerado.</pre>
+      </div>
+    </section>
+
+
+    <section class="card support-card">
+      <div class="section-head-lite">
+        <div>
+          <h2>Suporte</h2>
+          <p class="muted">Abra ticket como visitante ou conta demo. Staff responde pelo painel admin.</p>
+        </div>
+        <button id="refreshTicketsBtn" class="ghost" type="button">Atualizar</button>
+      </div>
+      <div class="support-form">
+        <select id="supportCategory">
+          <option value="deposito">Depósito</option>
+          <option value="saque">Saque</option>
+          <option value="jogo">Jogo</option>
+          <option value="conta">Conta</option>
+          <option value="bug">Bug</option>
+          <option value="outro">Outro</option>
+        </select>
+        <input id="supportSubject" maxlength="120" placeholder="Assunto do ticket" />
+        <textarea id="supportMessage" maxlength="2000" placeholder="Descreva o problema..."></textarea>
+        <button id="openTicketBtn" class="primary" type="button">Abrir ticket</button>
+      </div>
+      <p class="status" id="supportStatus">Nenhum ticket carregado ainda.</p>
+      <div id="supportTickets" class="support-tickets"></div>
+    </section>
+
+    <section class="card grid-two compact">
+      <div>
+        <h2>Fairness / sementes</h2>
+        <p class="muted">Cada rodada mostra o hash da seed antes do crash.</p>
+        <code id="seedHash">--</code>
+      </div>
+      <div>
+        <h2>Controles demo</h2>
+        <p class="status" id="status">Carregando jogo...</p>
+        <button id="resetBtn" class="ghost">Resetar saldo fake</button>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

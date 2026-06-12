@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin · Sky Pilot MVP</title>
+  <link rel="stylesheet" href="/admin/admin.css" />
+</head>
+<body>
+  <main class="shell">
+    <section id="loginPanel" class="login-card">
+      <div>
+        <p class="eyebrow">Painel Web</p>
+        <h1>Admin · Sky Pilot</h1>
+        <p class="muted">Controle demo do mini-app: sala, usuários, apostas, créditos fake e Pix/cripto fake.</p>
+      </div>
+      <form id="loginForm" class="stack">
+        <label>Senha admin</label>
+        <input id="adminUsername" type="text" placeholder="admin" autocomplete="username" />
+        <input id="adminPassword" type="password" placeholder="admin123" autocomplete="current-password" />
+        <button type="submit">Entrar no painel</button>
+        <p id="loginError" class="error"></p>
+      </form>
+    </section>
+
+    <section id="appPanel" class="app hidden">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Admin online</p>
+          <h1>Sky Pilot · Cockpit</h1>
+        </div>
+        <div class="actions">
+          <button id="refreshBtn" class="ghost">Atualizar</button>
+          <button id="logoutBtn" class="danger ghost">Sair</button>
+        </div>
+      </header>
+
+      <section class="grid cards">
+        <article class="card"><span>Jogadores</span><strong id="mPlayers">-</strong></article>
+        <article class="card"><span>Visitantes</span><strong id="mGuests">-</strong></article>
+        <article class="card"><span>Com payout</span><strong id="mPayoutReady">-</strong></article>
+        <article class="card"><span>Saldo fake total</span><strong id="mBalance">-</strong></article>
+        <article class="card"><span>Apostado</span><strong id="mStaked">-</strong></article>
+        <article class="card"><span>Pago</span><strong id="mPaid">-</strong></article>
+        <article class="card"><span>Casa demo</span><strong id="mHouse">-</strong></article>
+        <article class="card"><span>Apostas abertas</span><strong id="mOpenBets">-</strong></article>
+        <article class="card"><span>Tickets abertos</span><strong id="mOpenTickets">-</strong></article>
+        <article class="card"><span>Staff ativo</span><strong id="mStaffCount">-</strong></article>
+      </section>
+
+
+
+      <section class="panel config-panel">
+        <div class="section-head">
+          <div>
+            <h2>Configurações do MVP</h2>
+            <p class="muted compact">Edite direto daqui. Salva no runtime e também grava no arquivo <b>.env</b>.</p>
+          </div>
+          <span class="tag ok">editável</span>
+        </div>
+        <form id="configForm" class="config-form">
+          <label>ADMIN_PASSWORD
+            <input id="cfgAdminPassword" type="text" autocomplete="off" placeholder="admin123" />
+          </label>
+          <label>APP_NAME
+            <input id="cfgAppName" type="text" placeholder="Sky Pilot MVP" />
+          </label>
+          <label>WEBAPP_URL
+            <input id="cfgWebappUrl" type="url" placeholder="https://sua-url.ngrok-free.app" />
+          </label>
+          <label>HOUSE_EDGE
+            <input id="cfgHouseEdge" type="number" step="0.001" min="0" max="0.25" />
+          </label>
+          <label>STARTING_BALANCE
+            <input id="cfgStartingBalance" type="number" step="0.01" min="0" />
+          </label>
+          <label>MIN_BET
+            <input id="cfgMinBet" type="number" step="0.01" min="0.01" />
+          </label>
+          <label>MAX_BET
+            <input id="cfgMaxBet" type="number" step="0.01" min="0.01" />
+          </label>
+          <label>ROUND_TICK_MS
+            <input id="cfgRoundTickMs" type="number" step="1" min="40" max="2000" />
+          </label>
+          <div class="config-actions">
+            <button type="submit">Salvar configurações</button>
+            <button id="reloadConfigBtn" class="ghost" type="button">Recarregar valores</button>
+          </div>
+        </form>
+        <p id="configMsg" class="muted"></p>
+        <p class="warning compact"><b>Nota:</b> HOUSE_EDGE e ROUND_TICK_MS mudam na hora. APP_NAME, WEBAPP_URL, limites e saldo inicial também passam a valer no runtime. PORT é mantido no .env, mas trocar porta exige reiniciar o servidor.</p>
+      </section>
+
+      <section class="layout">
+        <aside class="panel game-panel">
+          <h2>Rodada global</h2>
+          <div class="big-mult" id="gameMult">1.00x</div>
+          <p id="gamePhase" class="status-pill">-</p>
+          <p class="muted">Round <b id="roundId">-</b> · crash visível: <b id="crashAt">-</b></p>
+          <p class="muted">Próxima rodada em: <b id="nextRound">-</b></p>
+          <div class="button-row">
+            <button id="startNowBtn">Iniciar agora</button>
+            <button id="forceCrashBtn" class="danger">Forçar crash</button>
+          </div>
+          <div class="mini-form">
+            <label>House edge demo</label>
+            <div class="inline">
+              <input id="houseEdgeInput" type="number" step="0.01" min="0" max="0.25" />
+              <button id="saveHouseEdgeBtn" class="ghost">Salvar</button>
+            </div>
+          </div>
+          <p class="warning">Tudo aqui é fake/demo. Nada de Pix real, saque real ou cripto real.</p>
+        </aside>
+
+        <section class="panel">
+          <div class="section-head">
+            <h2>Jogadores / visitantes</h2>
+            <input id="playerSearch" placeholder="Buscar userId, nome, Pix, moeda..." />
+          </div>
+          <div class="table-wrap"><table id="playersTable"></table></div>
+        </section>
+      </section>
+
+      <section class="layout two">
+        <section class="panel">
+          <div class="section-head"><h2>Apostas recentes</h2><input id="betSearch" placeholder="Buscar slot, status, userId..." /></div>
+          <div class="table-wrap"><table id="betsTable"></table></div>
+        </section>
+        <section class="panel">
+          <h2>Rodadas encerradas</h2>
+          <div id="roundHistory" class="history"></div>
+        </section>
+      </section>
+
+
+      <section class="layout two support-layout">
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h2>Tickets de suporte</h2>
+              <p class="muted compact">Atenda visitantes e contas demo sem sair do cockpit.</p>
+            </div>
+            <div class="inline compact-inline">
+              <select id="ticketStatusFilter">
+                <option value="">Todos</option>
+                <option value="open">Abertos</option>
+                <option value="waiting_staff">Aguardando staff</option>
+                <option value="waiting_user">Aguardando usuário</option>
+                <option value="closed">Fechados</option>
+              </select>
+              <input id="ticketSearch" placeholder="Buscar ticket..." />
+            </div>
+          </div>
+          <div id="ticketsList" class="tickets-list"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-head">
+            <div>
+              <h2>Sistema de staff</h2>
+              <p class="muted compact">Roles: owner, admin, support e auditor.</p>
+            </div>
+            <span id="staffMe" class="tag">-</span>
+          </div>
+          <form id="staffForm" class="form-grid staff-form">
+            <input id="staffUsername" placeholder="usuario" />
+            <input id="staffDisplayName" placeholder="nome exibido" />
+            <select id="staffRole">
+              <option value="support">support</option>
+              <option value="admin">admin</option>
+              <option value="auditor">auditor</option>
+              <option value="owner">owner</option>
+            </select>
+            <input id="staffPassword" type="password" placeholder="senha inicial" />
+            <button type="submit">Criar staff</button>
+          </form>
+          <p id="staffMsg" class="muted"></p>
+          <div class="table-wrap"><table id="staffTable"></table></div>
+        </section>
+      </section>
+
+      <section class="layout two">
+        <section class="panel">
+          <h2>Ajustar carteira fake</h2>
+          <form id="walletForm" class="form-grid">
+            <input id="walletUserId" placeholder="userId" />
+            <input id="walletAmount" type="number" step="0.01" placeholder="+100 ou -50" />
+            <input id="walletReason" placeholder="motivo" value="admin_adjust" />
+            <button type="submit">Aplicar</button>
+          </form>
+          <p id="walletMsg" class="muted"></p>
+        </section>
+        <section class="panel">
+          <h2>Auditoria admin</h2>
+          <div id="auditList" class="audit"></div>
+        </section>
+      </section>
+    </section>
+  </main>
+  <script src="/admin/admin.js"></script>
+</body>
+</html>

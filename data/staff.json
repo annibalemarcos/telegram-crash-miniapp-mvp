@@ -1,0 +1,16 @@
+{
+  "staff": {
+    "b8b10442-7cfa-4bd7-9ca2-20b8aebb26f9": {
+      "id": "b8b10442-7cfa-4bd7-9ca2-20b8aebb26f9",
+      "username": "admin",
+      "displayName": "Admin principal",
+      "role": "owner",
+      "active": true,
+      "passwordHash": "b5142f24d6709874e9b34bfd1d099d793657d15250c1233f0ecee30390156eb4",
+      "salt": "f94e2ebfece341a15b0879ba",
+      "createdAt": "2026-06-12T04:18:32.474Z",
+      "updatedAt": "2026-06-12T04:18:32.475Z"
+    }
+  },
+  "sessions": {}
+}
